@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styles } from './Styles';
 
 const WaitingRoomApp = () => {
@@ -9,6 +9,16 @@ const WaitingRoomApp = () => {
   ]);
   const [newName, setNewName] = useState('');
   const [newWaitTime, setNewWaitTime] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer); // Clean up on unmount
+  }, []);
 
   const addProvider = () => {
     if (newName.trim() && newWaitTime.trim()) {
@@ -31,6 +41,16 @@ const WaitingRoomApp = () => {
     if (e.key === 'Enter') {
       addProvider();
     }
+  };
+
+  // Format time with AM/PM
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
   };
 
   if (isAdmin) {
@@ -146,9 +166,8 @@ const WaitingRoomApp = () => {
           {providers.map((provider, index) => (
             <div key={provider.id} style={styles.displayCard}>
               <div style={styles.displayAvatar}>
-                {provider.name.charAt(0).toUpperCase()}
+                {provider.name.charAt(4).toUpperCase()}
               </div>
-
               <h3 style={styles.displayName}>{provider.name}</h3>
               <p style={styles.displayWaitTime}>Estimated wait: {provider.waitTime}</p>
             </div>
@@ -157,7 +176,7 @@ const WaitingRoomApp = () => {
       )}
 
       <div style={styles.currentTime}>
-        Current time: {new Date().toLocaleTimeString()}
+        Current time: {formatTime(currentTime)}
       </div>
     </div>
   );
