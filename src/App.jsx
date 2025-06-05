@@ -4,8 +4,8 @@ import { styles } from './Styles';
 const WaitingRoomApp = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [providers, setProviders] = useState([
-    { id: 1, name: "Dr. Johnson", waitTime: "5 minutes" },
-    { id: 2, name: "Dr. Chen", waitTime: "15 minutes" }
+    { id: 1, name: "Dr. Johnson", waitTime: "5 minutes", visible: true },
+    { id: 2, name: "Dr. Chen", waitTime: "15 minutes", visible: true }
   ]);
   const [newName, setNewName] = useState('');
   const [newWaitTime, setNewWaitTime] = useState('');
@@ -16,8 +16,7 @@ const WaitingRoomApp = () => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
-    return () => clearInterval(timer); // Clean up on unmount
+    return () => clearInterval(timer);
   }, []);
 
   const addProvider = () => {
@@ -25,7 +24,8 @@ const WaitingRoomApp = () => {
       const newProvider = {
         id: Date.now(),
         name: newName.trim(),
-        waitTime: newWaitTime.trim()
+        waitTime: newWaitTime.trim(),
+        visible: true
       };
       setProviders([...providers, newProvider]);
       setNewName('');
@@ -37,13 +37,18 @@ const WaitingRoomApp = () => {
     setProviders(providers.filter(provider => provider.id !== id));
   };
 
+  const toggleVisibility = (id) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { ...provider, visible: !provider.visible } : provider
+    ));
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       addProvider();
     }
   };
 
-  // Format time with AM/PM
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -122,12 +127,29 @@ const WaitingRoomApp = () => {
                         <p style={styles.waitTime}>Estimated wait: {provider.waitTime}</p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => deleteProvider(provider.id)}
-                      style={styles.deleteButton}
-                    >
-                      Remove
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={() => toggleVisibility(provider.id)}
+                        style={{
+                          background: provider.visible ? '#ffc107' : '#6c757d',
+                          color: 'white',
+                          border: 'none',
+                          padding: '8px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'background-color 0.3s ease'
+                        }}
+                      >
+                        {provider.visible ? 'Hide' : 'Show'}
+                      </button>
+                      <button
+                        onClick={() => deleteProvider(provider.id)}
+                        style={styles.deleteButton}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -156,14 +178,14 @@ const WaitingRoomApp = () => {
       <h1 style={styles.displayTitle}>Provider Wait Times</h1>
       <p style={styles.subtitle}>Current estimated wait times</p>
 
-      {providers.length === 0 ? (
+      {providers.filter(p => p.visible).length === 0 ? (
         <div style={styles.emptyState}>
           <h2 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>No providers available</h2>
           <p style={{ fontSize: '1.5rem' }}>Please check back later</p>
         </div>
       ) : (
         <div style={styles.displayGrid}>
-          {providers.map((provider, index) => (
+          {providers.filter(p => p.visible).map((provider, index) => (
             <div key={provider.id} style={styles.displayCard}>
               <div style={styles.displayAvatar}>
                 {provider.name.charAt(4).toUpperCase()}
