@@ -4,22 +4,22 @@ import { styles } from './Styles';
 const WaitingRoomApp = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [providers, setProviders] = useState([
-    { id: 1, name: "Dr. Johnson", status: "Available" },
-    { id: 2, name: "Dr. Chen", status: "In Consultation" }
+    { id: 1, name: "Dr. Johnson", waitTime: "5 minutes" },
+    { id: 2, name: "Dr. Chen", waitTime: "15 minutes" }
   ]);
   const [newName, setNewName] = useState('');
-  const [newStatus, setNewStatus] = useState('');
+  const [newWaitTime, setNewWaitTime] = useState('');
 
   const addProvider = () => {
-    if (newName.trim() && newStatus.trim()) {
+    if (newName.trim() && newWaitTime.trim()) {
       const newProvider = {
         id: Date.now(),
         name: newName.trim(),
-        status: newStatus.trim()
+        waitTime: newWaitTime.trim()
       };
       setProviders([...providers, newProvider]);
       setNewName('');
-      setNewStatus('');
+      setNewWaitTime('');
     }
   };
 
@@ -68,9 +68,9 @@ const WaitingRoomApp = () => {
               />
               <input
                 type="text"
-                placeholder="Status (e.g., Available)"
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
+                placeholder="Wait Time (e.g., 15 minutes)"
+                value={newWaitTime}
+                onChange={(e) => setNewWaitTime(e.target.value)}
                 onKeyPress={handleKeyPress}
                 style={styles.input}
               />
@@ -99,7 +99,7 @@ const WaitingRoomApp = () => {
                       </div>
                       <div>
                         <h4 style={styles.providerName}>{provider.name}</h4>
-                        <p style={styles.status}>Status: {provider.status}</p>
+                        <p style={styles.waitTime}>Estimated wait: {provider.waitTime}</p>
                       </div>
                     </div>
                     <button
@@ -133,8 +133,8 @@ const WaitingRoomApp = () => {
         Admin
       </button>
 
-      <h1 style={styles.displayTitle}>Provider Status Board</h1>
-      <p style={styles.subtitle}>Current provider availability</p>
+      <h1 style={styles.displayTitle}>Provider Wait Times</h1>
+      <p style={styles.subtitle}>Current estimated wait times</p>
 
       {providers.length === 0 ? (
         <div style={styles.emptyState}>
@@ -148,8 +148,9 @@ const WaitingRoomApp = () => {
               <div style={styles.displayAvatar}>
                 {provider.name.charAt(0).toUpperCase()}
               </div>
+
               <h3 style={styles.displayName}>{provider.name}</h3>
-              <p style={styles.displayStatus}>Status: {provider.status}</p>
+              <p style={styles.displayWaitTime}>Estimated wait: {provider.waitTime}</p>
             </div>
           ))}
         </div>
