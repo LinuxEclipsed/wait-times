@@ -210,5 +210,18 @@ export const styles = {
     marginTop: '40px',
     fontSize: '24px',
     opacity: 0.8
-  }
+  },
+  waitTimeToggleButton: {
+  background: '#17a2b8',
+  color: 'white',
+  border: 'none',
+  padding: '8px 12px',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  transition: 'background-color 0.3s ease'
+},
+waitTimeToggleButtonInactive: {
+  background: '#6c757d'
+}
 };

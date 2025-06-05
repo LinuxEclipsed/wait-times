@@ -4,8 +4,20 @@ import { styles } from './Styles';
 const WaitingRoomApp = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [providers, setProviders] = useState([
-    { id: 1, name: "Dr. Johnson", waitTime: "5 minutes", visible: true },
-    { id: 2, name: "Dr. Chen", waitTime: "15 minutes", visible: true }
+    { 
+      id: 1, 
+      name: "Dr. Johnson", 
+      waitTime: "5 minutes", 
+      visible: true,
+      showWaitTime: true 
+    },
+    { 
+      id: 2, 
+      name: "Dr. Chen", 
+      waitTime: "15 minutes", 
+      visible: true,
+      showWaitTime: true 
+    }
   ]);
   const [newName, setNewName] = useState('');
   const [newWaitTime, setNewWaitTime] = useState('');
@@ -25,7 +37,8 @@ const WaitingRoomApp = () => {
         id: Date.now(),
         name: newName.trim(),
         waitTime: newWaitTime.trim(),
-        visible: true
+        visible: true,
+        showWaitTime: true
       };
       setProviders([...providers, newProvider]);
       setNewName('');
@@ -40,6 +53,12 @@ const WaitingRoomApp = () => {
   const toggleVisibility = (id) => {
     setProviders(providers.map(provider => 
       provider.id === id ? { ...provider, visible: !provider.visible } : provider
+    ));
+  };
+
+  const toggleWaitTimeVisibility = (id) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { ...provider, showWaitTime: !provider.showWaitTime } : provider
     ));
   };
 
@@ -129,6 +148,21 @@ const WaitingRoomApp = () => {
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <button
+                        onClick={() => toggleWaitTimeVisibility(provider.id)}
+                        style={{
+                          background: provider.showWaitTime ? '#17a2b8' : '#6c757d',
+                          color: 'white',
+                          border: 'none',
+                          padding: '8px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'background-color 0.3s ease'
+                        }}
+                      >
+                        {provider.showWaitTime ? 'Hide Time' : 'Show Time'}
+                      </button>
+                      <button
                         onClick={() => toggleVisibility(provider.id)}
                         style={{
                           background: provider.visible ? '#ffc107' : '#6c757d',
@@ -191,7 +225,9 @@ const WaitingRoomApp = () => {
                 {provider.name.charAt(4).toUpperCase()}
               </div>
               <h3 style={styles.displayName}>{provider.name}</h3>
-              <p style={styles.displayWaitTime}>Estimated wait: {provider.waitTime}</p>
+              {provider.showWaitTime && (
+                <p style={styles.displayWaitTime}>Estimated wait: {provider.waitTime}</p>
+              )}
             </div>
           ))}
         </div>
