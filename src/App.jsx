@@ -9,14 +9,18 @@ const WaitingRoomApp = () => {
       name: "Dr. Johnson", 
       waitTime: "5 minutes", 
       visible: true,
-      showWaitTime: true 
+      showWaitTime: true,
+      isEditingWaitTime: false,
+      tempWaitTime: ""
     },
     { 
       id: 2, 
       name: "Dr. Chen", 
       waitTime: "15 minutes", 
       visible: true,
-      showWaitTime: true 
+      showWaitTime: true,
+      isEditingWaitTime: false,
+      tempWaitTime: ""
     }
   ]);
   const [newName, setNewName] = useState('');
@@ -38,7 +42,9 @@ const WaitingRoomApp = () => {
         name: newName.trim(),
         waitTime: newWaitTime.trim(),
         visible: true,
-        showWaitTime: true
+        showWaitTime: true,
+        isEditingWaitTime: false,
+        tempWaitTime: ""
       };
       setProviders([...providers, newProvider]);
       setNewName('');
@@ -62,9 +68,49 @@ const WaitingRoomApp = () => {
     ));
   };
 
-  const handleKeyPress = (e) => {
+  const startEditingWaitTime = (id) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { 
+        ...provider, 
+        isEditingWaitTime: true,
+        tempWaitTime: provider.waitTime
+      } : provider
+    ));
+  };
+
+  const saveWaitTime = (id) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { 
+        ...provider, 
+        isEditingWaitTime: false,
+        waitTime: provider.tempWaitTime
+      } : provider
+    ));
+  };
+
+  const cancelEditingWaitTime = (id) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { 
+        ...provider, 
+        isEditingWaitTime: false
+      } : provider
+    ));
+  };
+
+  const handleWaitTimeChange = (id, value) => {
+    setProviders(providers.map(provider => 
+      provider.id === id ? { 
+        ...provider, 
+        tempWaitTime: value
+      } : provider
+    ));
+  };
+
+  const handleKeyPress = (e, id) => {
     if (e.key === 'Enter') {
-      addProvider();
+      saveWaitTime(id);
+    } else if (e.key === 'Escape') {
+      cancelEditingWaitTime(id);
     }
   };
 
@@ -107,7 +153,7 @@ const WaitingRoomApp = () => {
                 placeholder="Provider Name"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyPress={(e) => { if (e.key === 'Enter') addProvider(); }}
                 style={styles.input}
               />
               <input
@@ -115,7 +161,7 @@ const WaitingRoomApp = () => {
                 placeholder="Wait Time (e.g., 15 minutes)"
                 value={newWaitTime}
                 onChange={(e) => setNewWaitTime(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyPress={(e) => { if (e.key === 'Enter') addProvider(); }}
                 style={styles.input}
               />
               <button onClick={addProvider} style={styles.addButton}>
@@ -143,7 +189,68 @@ const WaitingRoomApp = () => {
                       </div>
                       <div>
                         <h4 style={styles.providerName}>{provider.name}</h4>
-                        <p style={styles.waitTime}>Estimated wait: {provider.waitTime}</p>
+                        {provider.isEditingWaitTime ? (
+                          <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                            <input
+                              type="text"
+                              value={provider.tempWaitTime}
+                              onChange={(e) => handleWaitTimeChange(provider.id, e.target.value)}
+                              onKeyDown={(e) => handleKeyPress(e, provider.id)}
+                              style={{ 
+                                ...styles.input, 
+                                padding: '6px 10px',
+                                fontSize: '14px',
+                                width: '100px'
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => saveWaitTime(provider.id)}
+                              style={{
+                                background: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 10px',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => cancelEditingWaitTime(provider.id)}
+                              style={{
+                                background: '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 10px',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <p style={styles.waitTime}>
+                            Estimated wait: {provider.waitTime}
+                            <button
+                              onClick={() => startEditingWaitTime(provider.id)}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#007bff',
+                                cursor: 'pointer',
+                                marginLeft: '5px',
+                                fontSize: '12px'
+                              }}
+                            >
+                              (edit)
+                            </button>
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -175,7 +282,7 @@ const WaitingRoomApp = () => {
                           transition: 'background-color 0.3s ease'
                         }}
                       >
-                        {provider.visible ? 'Hide' : 'Show'}
+                        {provider.visible ? 'Hide Provider' : 'Show Provider'}
                       </button>
                       <button
                         onClick={() => deleteProvider(provider.id)}
