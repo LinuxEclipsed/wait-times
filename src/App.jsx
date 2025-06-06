@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { styles } from './Styles';
 
+useEffect(() => {
+  fetch('http://localhost:3001/providers')
+    .then(res => res.json())
+    .then(data => setProviders(data));
+}, []);
+
 const WaitingRoomApp = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [providers, setProviders] = useState([
