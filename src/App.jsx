@@ -1,91 +1,159 @@
 import React, { useState, useEffect } from 'react';
 import { styles } from './Styles';
+import axios from 'axios';
 
 const WaitingRoomApp = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [providers, setProviders] = useState([
-    { 
-      id: 1, 
-      name: "Dr. Johnson", 
-      waitTime: "5 minutes", 
-      visible: true,
-      showWaitTime: true,
-      isEditingWaitTime: false,
-      tempWaitTime: ""
-    },
-    { 
-      id: 2, 
-      name: "Dr. Chen", 
-      waitTime: "15 minutes", 
-      visible: true,
-      showWaitTime: true,
-      isEditingWaitTime: false,
-      tempWaitTime: ""
-    }
-  ]);
+  const [providers, setProviders] = useState([]);
   const [newName, setNewName] = useState('');
   const [newWaitTime, setNewWaitTime] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Update time every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // FastAPI endpoint
+  const API_URL = 'http://localhost:8000/api/providers';
 
-  const addProvider = () => {
-    if (newName.trim() && newWaitTime.trim()) {
-      const newProvider = {
-        id: Date.now(),
-        name: newName.trim(),
-        waitTime: newWaitTime.trim(),
-        visible: true,
-        showWaitTime: true,
-        isEditingWaitTime: false,
-        tempWaitTime: ""
-      };
-      setProviders([...providers, newProvider]);
-      setNewName('');
-      setNewWaitTime('');
+  // Fetch providers from FastAPI backend
+  const fetchProviders = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setProviders(response.data);
+      setIsLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
     }
   };
 
-  const deleteProvider = (id) => {
-    setProviders(providers.filter(provider => provider.id !== id));
+  // Enhanced useEffect with smart polling
+  useEffect(() => {
+    // Initial fetch
+    fetchProviders();
+    
+    // Set up time updater
+    const timeTimer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Set up smart polling for data updates
+    let dataTimer = null;
+    
+    const startPolling = () => {
+      if (!isAdmin && !dataTimer) {
+        dataTimer = setInterval(() => {
+          fetchProviders();
+        }, 2000); // Poll every 2 seconds
+      }
+    };
+
+    const stopPolling = () => {
+      if (dataTimer) {
+        clearInterval(dataTimer);
+        dataTimer = null;
+      }
+    };
+
+    // Handle page visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling(); // Stop polling when page is hidden
+      } else {
+        fetchProviders(); // Fetch immediately when page becomes visible
+        startPolling(); // Resume polling
+      }
+    };
+
+    // Start polling initially if not in admin mode
+    if (!isAdmin) {
+      startPolling();
+    }
+
+    // Listen for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup function
+    return () => {
+      clearInterval(timeTimer);
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isAdmin]); // Dependency on isAdmin to restart polling when switching modes
+
+  // Add new provider
+  const addProvider = async () => {
+    if (newName.trim() && newWaitTime.trim()) {
+      try {
+        const response = await axios.post(API_URL, {
+          name: newName.trim(),
+          wait_time: newWaitTime.trim(),
+          visible: true,
+          show_wait_time: true
+        });
+        setProviders([...providers, response.data]);
+        setNewName('');
+        setNewWaitTime('');
+      } catch (err) {
+        setError(err.message);
+      }
+    }
   };
 
-  const toggleVisibility = (id) => {
-    setProviders(providers.map(provider => 
-      provider.id === id ? { ...provider, visible: !provider.visible } : provider
-    ));
+  // Delete provider
+  const deleteProvider = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      setProviders(providers.filter(provider => provider.id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const toggleWaitTimeVisibility = (id) => {
-    setProviders(providers.map(provider => 
-      provider.id === id ? { ...provider, showWaitTime: !provider.showWaitTime } : provider
-    ));
+  // Update provider
+  const updateProvider = async (updatedProvider) => {
+    try {
+      await axios.put(`${API_URL}/${updatedProvider.id}`, updatedProvider);
+      setProviders(providers.map(provider => 
+        provider.id === updatedProvider.id ? updatedProvider : provider
+      ));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
+  // Toggle visibility
+  const toggleVisibility = async (id) => {
+    const provider = providers.find(p => p.id === id);
+    const updatedProvider = { ...provider, visible: !provider.visible };
+    await updateProvider(updatedProvider);
+  };
+
+  // Toggle wait time visibility
+  const toggleWaitTimeVisibility = async (id) => {
+    const provider = providers.find(p => p.id === id);
+    const updatedProvider = { ...provider, show_wait_time: !provider.show_wait_time };
+    await updateProvider(updatedProvider);
+  };
+
+  // Edit wait time functions
   const startEditingWaitTime = (id) => {
     setProviders(providers.map(provider => 
       provider.id === id ? { 
         ...provider, 
         isEditingWaitTime: true,
-        tempWaitTime: provider.waitTime
+        tempWaitTime: provider.wait_time
       } : provider
     ));
   };
 
-  const saveWaitTime = (id) => {
-    setProviders(providers.map(provider => 
-      provider.id === id ? { 
-        ...provider, 
-        isEditingWaitTime: false,
-        waitTime: provider.tempWaitTime
-      } : provider
-    ));
+  const saveWaitTime = async (id) => {
+    const provider = providers.find(p => p.id === id);
+    const updatedProvider = { 
+      ...provider, 
+      isEditingWaitTime: false,
+      wait_time: provider.tempWaitTime
+    };
+    await updateProvider(updatedProvider);
   };
 
   const cancelEditingWaitTime = (id) => {
@@ -122,6 +190,14 @@ const WaitingRoomApp = () => {
       hour12: true
     });
   };
+
+  if (isLoading) {
+    return <div style={styles.displayContainer}>Loading providers...</div>;
+  }
+
+  if (error) {
+    return <div style={styles.displayContainer}>Error: {error}</div>;
+  }
 
   if (isAdmin) {
     return (
@@ -235,7 +311,7 @@ const WaitingRoomApp = () => {
                           </div>
                         ) : (
                           <p style={styles.waitTime}>
-                            Estimated wait: {provider.waitTime}
+                            Estimated wait: {provider.wait_time}
                             <button
                               onClick={() => startEditingWaitTime(provider.id)}
                               style={{
@@ -257,7 +333,7 @@ const WaitingRoomApp = () => {
                       <button
                         onClick={() => toggleWaitTimeVisibility(provider.id)}
                         style={{
-                          background: provider.showWaitTime ? '#17a2b8' : '#6c757d',
+                          background: provider.show_wait_time ? '#17a2b8' : '#6c757d',
                           color: 'white',
                           border: 'none',
                           padding: '8px 12px',
@@ -267,7 +343,7 @@ const WaitingRoomApp = () => {
                           transition: 'background-color 0.3s ease'
                         }}
                       >
-                        {provider.showWaitTime ? 'Hide Time' : 'Show Time'}
+                        {provider.show_wait_time ? 'Hide Time' : 'Show Time'}
                       </button>
                       <button
                         onClick={() => toggleVisibility(provider.id)}
@@ -318,6 +394,9 @@ const WaitingRoomApp = () => {
 
       <h1 style={styles.displayTitle}>Provider Wait Times</h1>
       <p style={styles.subtitle}>Current estimated wait times</p>
+      <div style={styles.currentTime}>
+        {formatTime(currentTime)}
+      </div>
 
       {providers.filter(p => p.visible).length === 0 ? (
         <div style={styles.emptyState}>
@@ -328,21 +407,14 @@ const WaitingRoomApp = () => {
         <div style={styles.displayGrid}>
           {providers.filter(p => p.visible).map((provider, index) => (
             <div key={provider.id} style={styles.displayCard}>
-              <div style={styles.displayAvatar}>
-                {provider.name.charAt(4).toUpperCase()}
-              </div>
               <h3 style={styles.displayName}>{provider.name}</h3>
-              {provider.showWaitTime && (
-                <p style={styles.displayWaitTime}>Estimated wait: {provider.waitTime}</p>
+              {provider.show_wait_time && (
+                <p style={styles.displayWaitTime}>Estimated wait: {provider.wait_time}</p>
               )}
             </div>
           ))}
         </div>
       )}
-
-      <div style={styles.currentTime}>
-        Current time: {formatTime(currentTime)}
-      </div>
     </div>
   );
 };
