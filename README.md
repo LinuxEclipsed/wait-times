@@ -43,7 +43,7 @@ A modern waiting room management system with React frontend, FastAPI backend, an
 Clone the repository
 
 ```bash
-git clone https://github.com/your-repo/waiting-room-system.git
+git clone https://github.com/LinuxEclipsed/wait-times.git
 cd waiting-room-system
 ```
 
