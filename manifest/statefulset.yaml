@@ -23,13 +23,13 @@ spec:
           image: mariadb:10
           imagePullPolicy: "IfNotPresent"
           env:
-            - name: MARAIADB_ROOT_PASSWORD
+            - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: waittimes
                   key: mysql-password
             - name: MARIADB_DATABASE
-              value: wait-times
+              value: waiting_room
           ports:
             - containerPort: 3306
               name: mysql

@@ -20,12 +20,12 @@ spec:
         image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times:25.06.09
         ports:
         - containerPort: 5173
-      env:
-      - name: REACT_APP_API_URL
-        valueFrom:
-          secretKeyRef:
-            name: waittimes
-            key: REACT_APP_API_URL
+        env:
+        - name: REACT_APP_API_URL
+          valueFrom:
+            secretKeyRef:
+              name: waittimes
+              key: REACT_APP_API_URL
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,21 +49,21 @@ spec:
         image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times-api:latest
         ports:
         - containerPort: 8000
-      env:
-      - name: DB_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: waittimes
-            key: mysql-password
-      - name: DB_USER
-        valueFrom:
-          secretKeyRef:
-            name: waittimes
-            key: mysql-user
-      - name: DB_HOST
-        valueFrom:
-          secretKeyRef:
-            name: waittimes
-            key: DB_HOST
-      - name: DB_NAME
-        value: waiting_room
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: waittimes
+              key: mysql-password
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: waittimes
+              key: mysql-user
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: waittimes
+              key: DB_HOST
+        - name: DB_NAME
+          value: waiting_room
