@@ -12,7 +12,7 @@ const WaitingRoomApp = () => {
   const [error, setError] = useState(null);
 
   // FastAPI endpoint
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = 'http://waittimes-db:8000/api/providers';
 
   // Fetch providers from FastAPI backend
   const fetchProviders = async () => {
