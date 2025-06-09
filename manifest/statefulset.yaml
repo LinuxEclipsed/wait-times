@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: waittimes-db
+  namespace: waittimes
+  labels:
+    app: waittimes-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: waittimes-db
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: waittimes-db
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: waittimes-db
+          image: mariadb:10
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: MARAIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: waittimes
+                  key: mysql-password
+            - name: MARIADB_DATABASE
+              value: wait-times
+          ports:
+            - containerPort: 3306
+              name: mysql
+          resources:
+            limits: {}
+            requests:
+              cpu: 20m
+              memory: 100Mi
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-data
+          hostPath:
+            path: /data/waittimes-db
+            type: Directory
