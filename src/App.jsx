@@ -12,7 +12,7 @@ const WaitingRoomApp = () => {
   const [error, setError] = useState(null);
 
   // FastAPI endpoint
-  const API_URL = '/api/providers';
+  const API_URL = 'https://waitingroom-display.tfhd.ad/api/providers';
 
   // Fetch providers from FastAPI backend
   const fetchProviders = async () => {

@@ -4,7 +4,7 @@ metadata:
   name: waittimes-ingres
   namespace: waittimes
 spec:
-  ingressClassName: traefik
+  ingressClassName: nginx
   rules:
   - host: waitingroom-display.tfhd.ad
     http:
@@ -16,3 +16,10 @@ spec:
                 name: waittimes-app
                 port:
                   number: 5173
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: waittimes-api
+                port:
+                  number: 8000
