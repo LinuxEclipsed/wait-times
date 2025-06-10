@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: waittimes-app
-        image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times:25.06.09
+        image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times:25.06.10
         ports:
         - containerPort: 5173
         env:
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: waittimes-api
-        image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times-api:latest
+        image: public.ecr.aws/b7c8g1g5/linuxeclipsed/wait-times-api:25.06.10
         ports:
         - containerPort: 8000
         env:
