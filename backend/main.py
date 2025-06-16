@@ -29,7 +29,7 @@ DB_CONFIG = {
 # Pydantic models
 class ProviderBase(BaseModel):
     name: str
-    wait_time: int = Field(..., ge=0, le=480)
+    wait_time: int
     visible: bool = True
     show_wait_time: bool = True
 
