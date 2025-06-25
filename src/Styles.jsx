@@ -156,10 +156,9 @@ export const styles = {
   },
   displayGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(15%, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: '30px',
-    width: '100%',
-    maxWidth: '1400px',
+    width: '90%',
     margin: '0 auto',
     padding: '20px'
   },
@@ -168,33 +167,23 @@ export const styles = {
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '15px',
-    padding: '30px',
+    padding: '10px',
     textAlign: 'center',
     transition: 'all 0.3s ease',
-    minHeight: '5%',
+    minHeight: '50px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
   },
-  displayAvatar: {
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.2)',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '40px',
-    fontWeight: 'bold',
-    margin: '0 auto 20px auto'
-  },
   displayName: {
-    fontSize: '28px',
+    fontSize: '35px',
     fontWeight: 'bold',
     marginBottom: '10px'
   },
+  displayWaitTime: {
+    fontSize: '20px',
+},
   displayStatus: {
     fontSize: '20px',
     opacity: 0.9
@@ -206,10 +195,12 @@ export const styles = {
     width: '100%'
   },
   currentTime: {
-    textAlign: 'center',
-    marginTop: '40px',
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
     fontSize: '24px',
-    opacity: 0.8
+    opacity: 0.8,
+    textAlign: 'left',
   },
   waitTimeToggleButton: {
   background: '#17a2b8',

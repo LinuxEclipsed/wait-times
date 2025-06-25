@@ -29,7 +29,7 @@ DB_CONFIG = {
 # Pydantic models
 class ProviderBase(BaseModel):
     name: str
-    wait_time: str
+    wait_time: int
     visible: bool = True
     show_wait_time: bool = True
 
@@ -62,7 +62,7 @@ async def startup():
         CREATE TABLE IF NOT EXISTS providers (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
-            wait_time VARCHAR(50) NOT NULL,
+            wait_time SMALLINT NOT NULL,
             visible BOOLEAN DEFAULT TRUE,
             show_wait_time BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
