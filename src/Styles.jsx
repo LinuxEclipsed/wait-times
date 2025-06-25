@@ -167,33 +167,23 @@ export const styles = {
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '15px',
-    padding: '30px',
+    padding: '10px',
     textAlign: 'center',
     transition: 'all 0.3s ease',
-    minHeight: '200px',
+    minHeight: '50px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
   },
-  displayAvatar: {
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.2)',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '40px',
-    fontWeight: 'bold',
-    margin: '0 auto 20px auto'
-  },
   displayName: {
-    fontSize: '28px',
+    fontSize: '35px',
     fontWeight: 'bold',
     marginBottom: '10px'
   },
+  displayWaitTime: {
+    fontSize: '20px',
+},
   displayStatus: {
     fontSize: '20px',
     opacity: 0.9
