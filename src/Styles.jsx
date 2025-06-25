@@ -156,10 +156,9 @@ export const styles = {
   },
   displayGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(15%, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: '30px',
-    width: '100%',
-    maxWidth: '1400px',
+    width: '90%',
     margin: '0 auto',
     padding: '20px'
   },
@@ -171,7 +170,7 @@ export const styles = {
     padding: '30px',
     textAlign: 'center',
     transition: 'all 0.3s ease',
-    minHeight: '5%',
+    minHeight: '200px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -206,10 +205,12 @@ export const styles = {
     width: '100%'
   },
   currentTime: {
-    textAlign: 'center',
-    marginTop: '40px',
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
     fontSize: '24px',
-    opacity: 0.8
+    opacity: 0.8,
+    textAlign: 'left',
   },
   waitTimeToggleButton: {
   background: '#17a2b8',

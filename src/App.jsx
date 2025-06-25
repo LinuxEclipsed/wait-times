@@ -107,11 +107,10 @@ const WaitingRoomApp = () => {
           visible: true,
           show_wait_time: true
         });
-        // Ensure we have a valid array before spreading
         setProviders(prevProviders => Array.isArray(prevProviders) ? [...prevProviders, response.data] : [response.data]);
         setNewName('');
         setNewWaitTime('');
-        setError(null); // Clear any previous errors
+        setError(null);
       } catch (err) {
         console.error('Error adding provider:', err);
         setError(err.message);
@@ -169,7 +168,7 @@ const WaitingRoomApp = () => {
     if (!provider) return;
     
     const currentTime = parseInt(provider.wait_time) || 0;
-    const newTime = Math.max(0, currentTime + amount); // Ensure it doesn't go below 0
+    const newTime = Math.max(0, currentTime + amount);
     const updatedProvider = { ...provider, wait_time: newTime };
     await updateProvider(updatedProvider);
   };
@@ -222,7 +221,6 @@ const WaitingRoomApp = () => {
   };
 
   const handleWaitTimeChange = (id, value) => {
-    // Only allow numeric input
     if (value === '' || /^\d+$/.test(value)) {
       setProviders(prevProviders => 
         Array.isArray(prevProviders)
@@ -513,6 +511,10 @@ const WaitingRoomApp = () => {
 
   return (
     <div style={styles.displayContainer}>
+      <div style={styles.currentTime}>
+        {formatTime(currentTime)}
+      </div>
+
       <button
         onClick={() => setIsAdmin(true)}
         style={styles.adminButton}
@@ -528,9 +530,6 @@ const WaitingRoomApp = () => {
 
       <h1 style={styles.displayTitle}>Provider Wait Times</h1>
       <p style={styles.subtitle}>Current estimated wait times</p>
-      <div style={styles.currentTime}>
-        {formatTime(currentTime)}
-      </div>
 
       {!Array.isArray(providers) || providers.filter(p => p.visible).length === 0 ? (
         <div style={styles.emptyState}>
@@ -539,7 +538,7 @@ const WaitingRoomApp = () => {
         </div>
       ) : (
         <div style={styles.displayGrid}>
-          {providers.filter(p => p.visible).map((provider, index) => (
+          {providers.filter(p => p.visible).map((provider) => (
             <div key={provider.id} style={styles.displayCard}>
               <h3 style={styles.displayName}>{provider.name}</h3>
               {provider.show_wait_time && (
